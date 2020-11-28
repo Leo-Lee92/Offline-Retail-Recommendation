@@ -1,0 +1,10 @@
+/.ipynb_checkpoints
+/.pytest_cache
+/.vscode
+/Data/실시간저장데이터_20110117_20110207.txt
+/Data/실시간저장데이터_20110208_20110220.txt
+/Data/RFID_IPS_데이터추출_20200904.xlsx
+/Image/*
+/Code/RL_model/__pycache__/*
+/Code/utility/__pycache__/*
+/Code/Preprocessing/__pycache__/*
