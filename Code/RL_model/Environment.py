@@ -1,5 +1,9 @@
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import numpy as np
 import pandas as pd
+from utility.Utility import Error
 
 class Env:
     # action space = [(0,0)), (-1,0)), (1,0)), (0,-1)), (0,1)]
@@ -14,6 +18,18 @@ class Env:
                 "스포츠" : [(5,1)], "문구" : [(5,2)], "완구" : [(5,3)], "자동차" : [(5,4)], "애완원예용품" : [(5,5)], "인테리어" : [(5,6)],
                 "수예" : [(5,7)], "세제" : [(5,8)], "위생용품" : [(5,9)], "금지구역" : [(5,10),(5,11),(5,0)]}
         self.grid_world = self.make_grid_world()
+        self.reward_cell = []
+
+    # Set Reward
+    def set_reward(self, list_of_cells):
+        for key in list_of_cells:
+            self.reward_cell = self.reward_cell + self.grid_dic[key]
+
+        return np.array(self.reward_cell)
+
+    # Initialize the sate
+    def initialize_state(self):
+        return np.array((0, 0))
 
     def make_grid_world(self):
         grid_world = pd.DataFrame(np.zeros((6,12)))
@@ -25,13 +41,17 @@ class Env:
     def move(self, agent, action):
         terminal = False
         reward = 0
+
         #현재 좌표
         current_pos = agent.pos
+
         #현재 좌표에 대응되는 현재 매대
         cur_key = self.grid_world.iloc[current_pos[0], current_pos[1]]
+
         #이동된 좌표
         try: next_pos = agent.pos + agent.action_space[action] #아직은 전이확률을 고려하지 않음
         except: raise Error()
+
         #이동된 좌표에 대응되는 다음 매대
         try: next_key = self.grid_world.iloc[next_pos[0], next_pos[1]]
         except: next_key = "금지구역"
@@ -46,6 +66,7 @@ class Env:
                 elif action == 3: next_pos[1] = min(temp[1]) - 1
                 elif action == 4: next_pos[1] = max(temp[1]) + 1
                 else: raise Error()
+
         #현재 좌표가 최종목적지인지 확인
         if self.grid_world.iloc[current_pos[0], current_pos[1]] == "계산대":
             terminal = True
@@ -63,5 +84,3 @@ class Env:
             show_next_pos = agent.set_pos(next_pos)
         
         return show_next_pos, reward, terminal
-
-
