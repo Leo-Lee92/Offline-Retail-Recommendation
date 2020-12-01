@@ -5,7 +5,7 @@ class Agent:
         self.action_space = np.array([(0,0), (-1,0), (1,0), (0,-1), (0,1)]) # (제자리, 상, 하, 좌, 우)
         self.policy = np.array([0.20,0.20,0.20,0.20,0.20])
         self.q_table = np.zeros([self.state_space, self.action_space.shape[0]])
-        #self.pos = np.array()
+        self.pos = None
 
     def set_pos(self, position):
         self.pos = position
