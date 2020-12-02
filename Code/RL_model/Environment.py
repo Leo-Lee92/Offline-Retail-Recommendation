@@ -141,23 +141,23 @@ class Env:
 
         #현재 좌표가 최종목적지인지 확인
         if self.grid_world.iloc[current_pos[0], current_pos[1]] == "계산대":
-            if len(self.reward_cell) == 0: # 현재 좌표가 계산대이고 모든 보상 셀을 지나친 경우, terminal을 종료하고 보상을 (10)얻음. 
+            if len(self.reward_cell) == 0: # 현재 좌표가 계산대이고 모든 보상 셀을 지나친 경우, terminal을 종료하고 보상을 1 얻음. 
                 print("Terminal!, 계산대진입")
                 terminal = True
                 show_next_pos = agent.set_pos(agent.pos)
-                reward = 10
+                reward = 1
             else: #현재 좌표가 계산대이지만, 모든 보상 셀을 지나치지 않은 경우, 다시 이동함.
                 pass
 
         if terminal == True: #이동된 좌표가 이동 불가능한 지점인지 확인
-            reward = -1
+            reward = 0
         
         elif next_key == "금지구역" or tuple(next_pos) in self.grid_dic["금지구역"] :
             print("Terminal!, 금지구역진입")
             print("이동을 시도한 좌표 : {0}, {1}".format(next_key, next_pos))
             terminal = True
             show_next_pos = agent.set_pos(agent.pos)
-            reward = -1
+            reward = 0
 
         #이동가능한 동선이면 '이동':
         else:
