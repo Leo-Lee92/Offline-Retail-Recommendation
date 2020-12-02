@@ -1,12 +1,7 @@
-#%%
-import os
-import sys
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import numpy as np
 import pandas as pd
 from utility.Utility import Error
-from Agent import Agent
-#%%
+import copy
 class Env:
     # Ref : action space = [(0,0)), (-1,0)), (1,0)), (0,-1)), (0,1)]
     
@@ -22,6 +17,7 @@ class Env:
         self.grid_world = self.make_grid_world()
         self.trans_prob = trans_prob
         self.reward_cell = []
+
 
     # Set Reward cell
     def set_reward(self, list_of_cells):
@@ -50,13 +46,13 @@ class Env:
     def move(self, agent, action):
         terminal = False
         reward = 0
-
+        out_of_grid_world = False
         #현재 좌표
         current_pos = agent.pos
 
         #현재 좌표에 대응되는 현재 매대
         cur_key = self.grid_world.iloc[current_pos[0], current_pos[1]]
-        
+        next_key = None
         #전이확률을 고려하지 않을 시, temp_pos 를 next_pos로 바꿀 것
         #이동된 좌표
         try: temp_pos = np.array(agent.pos)
@@ -69,7 +65,7 @@ class Env:
 
         #매대간 이동이 존재하는대도 만약 cur_key와 temp_key가 같을 시,(이동이 발생했는대도 그리드월드 설계문제로 인해 매대 이동이 발생하지 못함)
         #이 때 이동좌표를 변경시켜줌
-        tx = None
+        t_x = 0
         if action != 0:
             if cur_key == temp_key:
                 temp = np.array(self.grid_dic[temp_key]).T
@@ -79,82 +75,73 @@ class Env:
                     elif action == 2:                   # when action is down
                         temp_pos[0] = max(temp[0])
                     t_x = (temp_pos + agent.action_space[action])[0]
-                    target_pos = self.grid_world.iloc[t_x,:]
+                    try: target_pos = self.grid_world.iloc[t_x,:]
+                    except: out_of_grid_world = True
+
                 elif (action == 3) or (action == 4): 
                     if action == 3:                     # when action is left
                         temp_pos[1] = min(temp[1])
                     elif action == 4:                   # when action is right
                         temp_pos[1] = max(temp[1])
                     t_x = (temp_pos + agent.action_space[action])[1]
-                    target_pos = self.grid_world.iloc[:, t_x]
-                else: raise Error()
-        
-        if t_x < 0: #이동불가능한 매대임.
-            terminal = True
-            show_next_pos = agent.set_pos(agent.pos)
-        else:
-            prob_list = []
-            for target in list(target_pos):
-                print(target)
-                #print(cur_key)
-                prob_list.append(self.trans_prob.loc[cur_key,target])
-            prob_list = np.array(prob_list) / np.sum(np.array(prob_list))
-            order_index = np.random.choice(len(target_pos), 1, p = prob_list)
-            next_key = target_pos[order_index]
-            if (action == 1) or (action == 2):
-                next_pos = (t_x, order_index[0])
-            elif (action == 3) or (action == 4):
-                next_pos = (order_index[0], t_x)
-            print(prob_list)
-            print(next_pos)
-            print(next_key)
-        ###전이확률을 고려하지 않을시 ### 사이의 코드는 삭제처리
- 
+                    try: target_pos = self.grid_world.iloc[:, t_x]
+                    except: out_of_grid_world = True
 
-        ###
-        '''
+                else: 
+                    t_x = -1
+                    raise Error()
+
+            if t_x < 0 or out_of_grid_world == True: #이동불가능한 매대임.(그리드 월드를 벗어난 경우)
+                terminal = True
+                print("이동을 시도한 좌표(action이 발생하기 직전 칸임) : {0}, {1}, {2}".format(temp_pos, t_x, out_of_grid_world))
+                show_next_pos = agent.set_pos(agent.pos) #원래위치 반환
+                next_key = "금지구역"
+                next_pos = temp_pos #error(Unbounded local variable error)를 피하기 위해 삽입함.
+            else:
+                prob_list = []
+                for target in list(target_pos):
+                    try:
+                        prob_list.append(self.trans_prob.loc[cur_key,target]) #전이확률 반영
+                    except: #금지구역에 대응되는 전이확률은 없음으로, 고정된 확률값을 삽입함.
+                        prob_list.append(1/len(target_pos))
+                prob_list = np.array(prob_list) / np.sum(np.array(prob_list)) 
+                order_index = np.random.choice(len(target_pos), 1, p = prob_list)
+                next_key = target_pos[order_index].values[0]
+
+                if (action == 1) or (action == 2):
+                    next_pos = (t_x, order_index[0])
+                elif (action == 3) or (action == 4):
+                    next_pos = (order_index[0], t_x)
+                    #print(next_pos)
+                else: pass
+        else:
+            next_pos = current_pos
+        ###전이확률을 고려하지 않을시 ### 사이의 코드는 삭제처리
+        
+        #print(next_key)
 
         #현재 좌표가 최종목적지인지 확인
         if self.grid_world.iloc[current_pos[0], current_pos[1]] == "계산대":
+            print("계산대진입")
             terminal = True
             show_next_pos = agent.set_pos(agent.pos)
-            #reward = 0
+            reward = 0
 
         #이동된 좌표가 이동 불가능한 지점인지 확인
-        elif next_key == "금지구역" or tuple(next_pos) in self.grid_dic["금지구역"] or next_pos[0] < 0 or next_pos[1] < 0:
+        elif terminal == True:
+            pass
+        
+        elif next_key == "금지구역" or tuple(next_pos) in self.grid_dic["금지구역"] :
+            print("금지구역에 도달")
+            print("이동을 시도한 좌표 : {0}, {1}".format(next_key, next_pos))
             terminal = True
             show_next_pos = agent.set_pos(agent.pos)
-            #reward = 0
+            reward = 0
 
         #이동가능한 동선이면 '이동':
         else:
             show_next_pos = agent.set_pos(next_pos)
         
         return show_next_pos, reward, terminal
-        '''
+    
 
-#%%
- 
-#%%
-trans_prob_data
-#%% 
-env = Env(trans_prob_data)   
-agent = Agent(env.grid_dic)
-initial_state = env.initialize_state()  
-cur_state = copy.deepcopy(initial_state) 
-agent.pos = (2,5) 
-env.move(agent, 4)
-
-# %%
-# 0~4 까지 3개 추출 0, 1 ,2 , 3, 4 에 해당하는 확률
-np.random.choice( 5, 1 , p = [0, 0.1, 0.9, 0, 0])
-# %%
-import copy
-#%%
-dir = os.path.dirname(os.path.dirname(__file__)) + "/Preprocessing/Data/"
-trans_prob_file_name = "transition_probability_final.csv"
-trans_prob_data = pd.read_csv(dir+trans_prob_file_name)
-trans_prob_data = trans_prob_data.set_index("Unnamed: 0")
-# %%
-trans_prob_data
-# %%
