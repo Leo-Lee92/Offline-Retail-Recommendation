@@ -45,17 +45,17 @@ def main():
     
     for episode in range(num_episodes):
         terminal = False    # If done = False, episode continues, otherwise episode ends. Episode ends when agent arrives at goal
-        initial_state = env.initialize_state()  # initial environment for agent, (0,0)
-        cur_state = copy.deepcopy(initial_state) 
-        agent.set_pos(cur_state)# initial state for agent, (0,0)
+        initial_pos = env.initialize_state()  # initial environment for agent, (0,0)
+        cur_pos = copy.deepcopy(initial_pos) 
+        agent.set_pos(cur_pos)# initial state for agent, (0,0)
         while(terminal == False):   # continues episode until it arrives at goal
             print("current_pos : {0}".format(agent.pos))
-            cur_state = agent.get_pos()
-            action = agent.get_action(cur_state, "epsilon-greedy")  # agent select action according to policy
+            cur_pos = agent.get_pos()
+            action = agent.get_action(cur_pos, "epsilon-greedy")  # agent select action according to policy
             print("action : {0}".format(action))
             
-            next_state, reward , terminal = env.move(agent, action)
-            print("next_state : {0}".format(next_state))
+            next_pos, reward , terminal = env.move(agent, action)
+            print("next_pos : {0}".format(next_pos))
             print("reward : {0}".format(reward))
             print("terminal : {0}".format(terminal))
             #print(next_state)

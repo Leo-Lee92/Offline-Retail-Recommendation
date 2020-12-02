@@ -99,21 +99,28 @@ class Env:
                 next_pos = temp_pos #error(Unbounded local variable error)를 피하기 위해 삽입함.
             else:
                 prob_list = []
+                prob_list.append(self.trans_prob.loc[cur_key,cur_key])   #자기자신으로 돌아올 확률 추가
                 for target in list(target_pos):
                     try:
                         prob_list.append(self.trans_prob.loc[cur_key,target]) #전이확률 반영
                     except: #금지구역에 대응되는 전이확률은 없음으로, 고정된 확률값을 삽입함.
-                        prob_list.append(1/len(target_pos))
+                        prob_list.append(1/(len(target_pos)+1))
                 prob_list = np.array(prob_list) / np.sum(np.array(prob_list)) 
-                order_index = np.random.choice(len(target_pos), 1, p = prob_list)
-                next_key = target_pos[order_index].values[0]
+                order_index = np.random.choice(len(target_pos)+1, 1, p = prob_list)
+                if order_index[0] == 0:
+                    next_key = cur_key
+                else:    
+                    next_key = target_pos[order_index].values[0]
 
-                if (action == 1) or (action == 2):
-                    next_pos = (t_x, order_index[0])
-                elif (action == 3) or (action == 4):
-                    next_pos = (order_index[0], t_x)
-                    #print(next_pos)
-                else: pass
+                if next_key == cur_key:
+                    next_pos = current_pos
+                else:
+                    if (action == 1) or (action == 2):
+                        next_pos = (t_x, order_index[0])
+                    elif (action == 3) or (action == 4):
+                        next_pos = (order_index[0], t_x)
+                        #print(next_pos)
+                    else: pass
         else:
             next_pos = current_pos
         ###전이확률을 고려하지 않을시 ### 사이의 코드는 삭제처리
