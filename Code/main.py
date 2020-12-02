@@ -36,31 +36,31 @@ def main():
 
     #shopping_plan_list = ass_list[np.random.randint(len(ass_list))]         # Type the plan list of shopping. Datatype should be list.
     shopping_plan_list = ass_list[0]
-    reward_cell = env.set_reward(shopping_plan_list)                        # reward cell is set.
-
+    initial_reward_cell = env.set_reward(shopping_plan_list)                        # reward cell is set.
 
     '''
     Excute episodes
     '''
     
     for episode in range(num_episodes):
-        terminal = False    # If done = False, episode continues, otherwise episode ends. Episode ends when agent arrives at goal
-        initial_pos = env.initialize_state()  # initial environment for agent, (0,0)
+        terminal = False                                                        # If done = False, episode continues, otherwise episode ends. Episode ends when agent arrives at goal
+        initial_pos = env.initialize_state()                                    # initial environment for agent, (0,0)
         cur_pos = copy.deepcopy(initial_pos) 
-        agent.set_pos(cur_pos)# initial state for agent, (0,0)
-        while(terminal == False):   # continues episode until it arrives at goal
-            print("current_pos : {0}".format(agent.pos))
-            cur_pos = agent.get_pos()
-            action = agent.get_action(cur_pos, "epsilon-greedy")  # agent select action according to policy
-            print("action : {0}".format(action))
+        agent.set_pos(cur_pos)                                                  # initial state for agent, (0,0)
+
+        while(terminal == False):                                               # continues episode until it arrives at goal
             
-            next_pos, reward , terminal = env.move(agent, action)
-            print("next_pos : {0}".format(next_pos))
-            print("reward : {0}".format(reward))
-            print("terminal : {0}".format(terminal))
+            cur_pos = agent.get_pos()                                           # Get current position before agent select it's action
+            action = agent.get_action(cur_pos, "epsilon-greedy")                # agent select action according to policy
+            next_pos, reward, terminal = env.move(agent, action)                # Environment select position of agent given agent's action
+
+            print("Action : {0}, current_pos : {1} -> next_pos : {2}, Reward : {3}, Terminal : {4}".format(action, cur_pos, next_pos, reward, terminal))
+            #env.remove_reward(env.grid_world.iloc[next_pos[0],next_pos[1]])
+            #print(env.reward_cell)
+            
+
             #print(next_state)
             #agent.set_pos(next_state)
-    
 
 if __name__ == "__main__":
     main()

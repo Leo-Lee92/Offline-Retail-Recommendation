@@ -65,7 +65,7 @@ class Env:
 
         #매대간 이동이 존재하는대도 만약 cur_key와 temp_key가 같을 시,(이동이 발생했는대도 그리드월드 설계문제로 인해 매대 이동이 발생하지 못함)
         #이 때 이동좌표를 변경시켜줌
-        t_x = 0
+        t_pos = 0
         if action != 0:
             if cur_key == temp_key:
                 temp = np.array(self.grid_dic[temp_key]).T
@@ -74,8 +74,8 @@ class Env:
                         temp_pos[0] = min(temp[0])
                     elif action == 2:                   # when action is down
                         temp_pos[0] = max(temp[0])
-                    t_x = (temp_pos + agent.action_space[action])[0]
-                    try: target_pos = self.grid_world.iloc[t_x,:]
+                    t_pos = (temp_pos + agent.action_space[action])[0]
+                    try: target_pos = self.grid_world.iloc[t_pos,:]
                     except: out_of_grid_world = True
 
                 elif (action == 3) or (action == 4): 
@@ -83,20 +83,22 @@ class Env:
                         temp_pos[1] = min(temp[1])
                     elif action == 4:                   # when action is right
                         temp_pos[1] = max(temp[1])
-                    t_x = (temp_pos + agent.action_space[action])[1]
-                    try: target_pos = self.grid_world.iloc[:, t_x]
+                    t_pos = (temp_pos + agent.action_space[action])[1]
+                    try: target_pos = self.grid_world.iloc[:, t_pos]
                     except: out_of_grid_world = True
 
                 else: 
-                    t_x = -1
+                    t_pos = -1 #error(Unbounded local variable error)를 피하기 위해 삽입함.
                     raise Error()
 
-            if t_x < 0 or out_of_grid_world == True: #이동불가능한 매대임.(그리드 월드를 벗어난 경우)
+            if t_pos < 0 or out_of_grid_world == True: #이동불가능한 매대임.(그리드 월드를 벗어난 경우)
                 terminal = True
-                print("이동을 시도한 좌표(action이 발생하기 직전 칸임) : {0}, {1}, {2}".format(temp_pos, t_x, out_of_grid_world))
+                print("Terminal!, out of grid world")
+                print("이동을 시도한 좌표(+1) : {0}, {1}, {2}".format(temp_pos, t_pos, out_of_grid_world))
                 show_next_pos = agent.set_pos(agent.pos) #원래위치 반환
                 next_key = "금지구역"
                 next_pos = temp_pos #error(Unbounded local variable error)를 피하기 위해 삽입함.
+        
             else:
                 prob_list = []
                 prob_list.append(self.trans_prob.loc[cur_key,cur_key])   #자기자신으로 돌아올 확률 추가
@@ -116,34 +118,32 @@ class Env:
                     next_pos = current_pos
                 else:
                     if (action == 1) or (action == 2):
-                        next_pos = (t_x, order_index[0]-1)
+                        next_pos = (t_pos, order_index[0]-1)
                     elif (action == 3) or (action == 4):
-                        next_pos = (order_index[0]-1, t_x)
+                        next_pos = (order_index[0]-1, t_pos)
                         #print(next_pos)
                     else: pass
         else:
             next_pos = current_pos
-        ###전이확률을 고려하지 않을시 ### 사이의 코드는 삭제처리
         
-        #print(next_key)
 
         #현재 좌표가 최종목적지인지 확인
         if self.grid_world.iloc[current_pos[0], current_pos[1]] == "계산대":
-            print("계산대진입")
+            print("Terminal!, 계산대진입")
             terminal = True
             show_next_pos = agent.set_pos(agent.pos)
             reward = 0
 
         #이동된 좌표가 이동 불가능한 지점인지 확인
         elif terminal == True:
-            pass
+            reward = -1
         
         elif next_key == "금지구역" or tuple(next_pos) in self.grid_dic["금지구역"] :
-            print("금지구역에 도달")
+            print("Terminal!, 금지구역진입")
             print("이동을 시도한 좌표 : {0}, {1}".format(next_key, next_pos))
             terminal = True
             show_next_pos = agent.set_pos(agent.pos)
-            reward = 0
+            reward = -1
 
         #이동가능한 동선이면 '이동':
         else:
