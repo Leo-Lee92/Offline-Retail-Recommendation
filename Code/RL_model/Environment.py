@@ -27,6 +27,18 @@ class Env:
 
     #If the agent passes through the reward cell, the cell will no longer return the reward.
     # Remove Reward cell
+    def get_reward(self, cell_pos):
+        if len(self.reward_cell) != 0:
+            for r_cell in self.reward_cell:
+                if r_cell == tuple(cell_pos):
+                    cell_name = self.grid_world.iloc[cell_pos[0], cell_pos[1]]
+                    self.remove_reward(cell_name)
+                    return 1
+                else:
+                    return 0
+        else:
+            return 0
+        
     def remove_reward(self, cell_name):
         for cell in self.grid_dic[cell_name]:
             try: self.reward_cell.remove(cell)
@@ -129,13 +141,15 @@ class Env:
 
         #현재 좌표가 최종목적지인지 확인
         if self.grid_world.iloc[current_pos[0], current_pos[1]] == "계산대":
-            print("Terminal!, 계산대진입")
-            terminal = True
-            show_next_pos = agent.set_pos(agent.pos)
-            reward = 0
+            if len(self.reward_cell) == 0: # 현재 좌표가 계산대이고 모든 보상 셀을 지나친 경우, terminal을 종료하고 보상을 (10)얻음. 
+                print("Terminal!, 계산대진입")
+                terminal = True
+                show_next_pos = agent.set_pos(agent.pos)
+                reward = 10
+            else: #현재 좌표가 계산대이지만, 모든 보상 셀을 지나치지 않은 경우, 다시 이동함.
+                pass
 
-        #이동된 좌표가 이동 불가능한 지점인지 확인
-        elif terminal == True:
+        if terminal == True: #이동된 좌표가 이동 불가능한 지점인지 확인
             reward = -1
         
         elif next_key == "금지구역" or tuple(next_pos) in self.grid_dic["금지구역"] :
@@ -148,6 +162,7 @@ class Env:
         #이동가능한 동선이면 '이동':
         else:
             show_next_pos = agent.set_pos(next_pos)
+            reward = self.get_reward(show_next_pos)
         
         return show_next_pos, reward, terminal
     

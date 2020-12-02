@@ -37,7 +37,7 @@ def main():
     #shopping_plan_list = ass_list[np.random.randint(len(ass_list))]         # Type the plan list of shopping. Datatype should be list.
     shopping_plan_list = ass_list[0]
     initial_reward_cell = env.set_reward(shopping_plan_list)                        # reward cell is set.
-
+    #print(initial_reward_cell)
     '''
     Excute episodes
     '''
