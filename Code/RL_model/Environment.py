@@ -105,20 +105,20 @@ class Env:
                         prob_list.append(self.trans_prob.loc[cur_key,target]) #전이확률 반영
                     except: #금지구역에 대응되는 전이확률은 없음으로, 고정된 확률값을 삽입함.
                         prob_list.append(1/(len(target_pos)+1))
-                prob_list = np.array(prob_list) / np.sum(np.array(prob_list)) 
-                order_index = np.random.choice(len(target_pos)+1, 1, p = prob_list)
+                prob_list = np.array(prob_list) / np.sum(np.array(prob_list))
+                order_index = np.random.choice(np.arange(len(target_pos)+1), 1, p = prob_list)
                 if order_index[0] == 0:
                     next_key = cur_key
-                else:    
-                    next_key = target_pos[order_index].values[0]
+                else:  
+                    next_key = target_pos.values[order_index[0]-1]
 
                 if next_key == cur_key:
                     next_pos = current_pos
                 else:
                     if (action == 1) or (action == 2):
-                        next_pos = (t_x, order_index[0])
+                        next_pos = (t_x, order_index[0]-1)
                     elif (action == 3) or (action == 4):
-                        next_pos = (order_index[0], t_x)
+                        next_pos = (order_index[0]-1, t_x)
                         #print(next_pos)
                     else: pass
         else:
