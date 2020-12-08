@@ -12,7 +12,7 @@ env.set_grid_initialize((4, 4))             # 테스트 grid 환경을 원하는
 env.make_grid_world()                       # 만들어진 grid world 확인하기
 env.set_start((0, 0))                       # 출발지점 좌표 설정해주기
 env.set_end((3, 3))                         # 도착지점 좌표 설정해주기
-# env.set_reward([(1, 1)])                    # 보상 좌표 설정해주기 (도착지점만 보상좌표로 설정하고 싶으면 보상좌표 설정 안하면 됨.)
+# env.set_reward([(1, 1)])                  # 보상 좌표 설정해주기 (도착지점만 보상좌표로 설정하고 싶으면 보상좌표 설정 안하면 됨.)
 env.grid_world                              # 그리드 월드 확인
 reward_cell = copy.deepcopy(env.reward_cell)
 

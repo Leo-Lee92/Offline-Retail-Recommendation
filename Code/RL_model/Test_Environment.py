@@ -158,7 +158,6 @@ class TestEnv:
     def remove_reward(self, cell_name):
         self.reward_cell.remove(self.grid_dic[cell_name][0])
 
-
     # # If the agent passes through the reward cell, the cell will no longer return the reward.
     # def get_reward(self, cell_pos):
     #     reward = 0

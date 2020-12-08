@@ -34,38 +34,6 @@ class Agent(tf.keras.Model):
     def get_pos(self):
         return self.pos
 
-    # '''
-    # Tableu용 get_action
-    # '''
-    # def get_action(self, state, action):
-
-
-    #     # Try greedy policy
-    #     if self.policy == "greedy":                                
-    #         action_idx = tf.argmax(q_vector[0])                        # action_idx is either 0, 1, 2, 3 or 4 (제자리, 상, 하, 좌, 우).
-    #         action = self.action_space[action_idx]
-
-    #     # Try epsilon-greedy policy (SARSA, Q-learning)
-    #     elif self.policy == "epsilon-greedy":
-
-    #         if self.epsilon > self.epsilon_min:
-    #             self.epsilon *= 0.999
-
-    #         random_prob = np.random.uniform(low=0.0, high=1.0, size= 1)[0]      # random value from normal distribution
-    #         print('epsilon :', self.epsilon)
-
-    #         # EXPLORATION : if random value is less and equal to epsilon
-    #         if random_prob <= self.epsilon:        
-    #             print('random !')
-    #             action_vector = range(len(self.action_space))                                  
-    #             action = np.random.choice(action_vector, size = 1)[0]
-
-    #         # EXPLOITATION : if random value is greater than epsilon
-    #         else:
-    #             print('exploitation !')
-    #             action = tf.argmax(q_vector[0])     # if multiple actions have the same highest value, take the first index.
-
-    #     return action
 
     '''
     Deep RL을 위한 get_action 함수라 일단 주석처리함
@@ -99,22 +67,6 @@ class Agent(tf.keras.Model):
                 action = tf.argmax(q_vector[0])     # if multiple actions have the same highest value, take the first index.
 
         return action
-
-# def Train(agent, training_sample, algorithm):
-#     gamma = 0.99
-
-#     action = training_sample[0]
-#     next_pos = training_sample[1]    # next_pos
-#     q_table = training_sample[2]
-#     reward = training_sample[3]
-
-#     if algorithm == "SARSA":    # SARSA 'predicts' next action one more time based on current policy and 'control' with the predicted action.
-
-
-#     if algorithm == "Q-learning":   # Q-learning 'control' with the observation that has the maximum q-value. Do not predicts one more time.
- 
-
-#     return  loss.numpy()
 
 def Train(agent, env, len_episode, algorithm):
     gamma = 0.99
