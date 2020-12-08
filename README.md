@@ -17,7 +17,9 @@ This repository covers the contents of research related to offline retail recomm
 - 보상을 반환하는 지점은 "방문 매대"와 "계산대"로 설정하였음
 - 보상을 반환하는 지점이 한 곳일 경우, 즉 "계산대"에서만 보상을 받을 경우, 또는 보상을 반환하는 지점들이 아래 그림과 같이 서로 경로상에 나열되어 있을 경우 수렴하는 퍼포먼스를 보여주었음.
 
-
+<p align="center"><img src="https://user-images.githubusercontent.com/61273017/101516731-2cebf800-39c3-11eb-8bef-b80fca9bcd42.PNG"></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/61273017/101516727-2bbacb00-39c3-11eb-8514-8f0434e309ef.PNG"></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/61273017/101516733-2cebf800-39c3-11eb-92aa-4d6b82e9927d.PNG"></p>
 
 - 실험 세팅은 아래와 같음.
   - 학습 알고리즘: Deep Q-learning 및 Deep SARSA를 통해 학습되었음. 
