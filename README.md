@@ -22,14 +22,14 @@ This repository covers the contents of research related to offline retail recomm
 <p align="center"><img src="https://user-images.githubusercontent.com/61273017/101516733-2cebf800-39c3-11eb-92aa-4d6b82e9927d.PNG"></p>
 
 - 실험 세팅은 아래와 같음.
-  - 학습 알고리즘: Deep Q-learning 및 Deep SARSA를 통해 학습되었음. 
-  - 상태: (0, 1), (3, 1)과 같이 좌표를 나타내는 2차원 벡터
-  - 행위: {0, 1, 2, 3} (상, 하, 좌, 우)의 4차원 벡터
-  - Agent 네트워크: Fully Connected Perceptron
-  - 옵티마이저: Adam
-  - 학습률: 1e-20
-  - 정책: Epsilon-greedy
-  - 입실론 감소율: 0.9999
+  - **학습 알고리즘:** Deep Q-learning, Deep SARSA 
+  - **상태:** (0, 1), (3, 1)과 같이 좌표를 나타내는 2차원 벡터
+  - **행위:** {0, 1, 2, 3} (상, 하, 좌, 우)의 4차원 벡터
+  - **Agent 네트워크:** Fully Connected Perceptron
+  - **옵티마이저:** Adam
+  - **학습률:** 1e-20
+  - **정책:** Epsilon-greedy
+  - **입실론 감소율:** 0.9999
 
 **소결**
 - Fully Connected Layer 에이전트가 학습하기에 주어진 상태가 너무 단순하여 Q(a|s)를 학습한다기보다 Q(a)를 학습하게 되는 경향이 있음.
