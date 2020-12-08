@@ -14,4 +14,20 @@ This repository covers the contents of research related to offline retail recomm
 3) 즉, 오프라인 매장내 고객의 동선은 C자형 커브를 그리게 됨.
 
 **실험결과 중간요약**
+- 보상을 반환하는 지점은 "방문 매대"와 "계산대"로 설정하였음
+- 보상을 반환하는 지점이 한 곳일 경우, 즉 "계산대"에서만 보상을 받을 경우, 또는 보상을 반환하는 지점들이 아래 그림과 같이 서로 경로상에 나열되어 있을 경우 수렴하는 퍼포먼스를 보여주었음.
 
+
+
+- 실험 세팅은 아래와 같음.
+  - 학습 알고리즘: Deep Q-learning 및 Deep SARSA를 통해 학습되었음. 
+  - 상태: (0, 1), (3, 1)과 같이 좌표를 나타내는 2차원 벡터
+  - 행위: {0, 1, 2, 3} (상, 하, 좌, 우)의 4차원 벡터
+  - Agent 네트워크: Fully Connected Perceptron
+  - 옵티마이저: Adam
+  - 학습률: 1e-20
+  - 정책: Epsilon-greedy
+  - 입실론 감소율: 0.9999
+
+**소결**
+- Fully Connected Layer 에이전트가 학습하기에 주어진 상태가 너무 단순하여 Q(a|s)를 학습한다기보다 Q(a)를 학습하게 되는 경향이 있음.
