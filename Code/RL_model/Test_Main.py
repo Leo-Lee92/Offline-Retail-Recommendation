@@ -11,18 +11,11 @@ env = TestEnv()
 env.set_grid_initialize((4, 4))             # 테스트 grid 환경을 원하는 사이즈로 초기화하기 
 env.make_grid_world()                       # 만들어진 grid world 확인하기
 env.set_start((0, 0))                       # 출발지점 좌표 설정해주기
-env.set_end((2, 3))                         # 도착지점 좌표 설정해주기
-env.set_reward([(1, 1)])                    # 보상 좌표 설정해주기 (도착지점만 보상좌표로 설정하고 싶으면 보상좌표 설정 안하면 됨.)
+env.set_end((3, 3))                         # 도착지점 좌표 설정해주기
+# env.set_reward([(1, 1)])                    # 보상 좌표 설정해주기 (도착지점만 보상좌표로 설정하고 싶으면 보상좌표 설정 안하면 됨.)
 env.grid_world                              # 그리드 월드 확인
 reward_cell = copy.deepcopy(env.reward_cell)
 
-# state_info = []
-# for i, val in enumerate(env.grid_dic.values()):
-#     state_info.extend(val)
-
-# agent = Agent(state_info)
-# agent.set_q_table()
-# agent.q_table
 agent = Agent()
 agent.epsilon = 1.0
 num_episodes = 1000
@@ -49,9 +42,7 @@ for epi in range(num_episodes):
 
     while(terminal == False):
         len_episode += 1
-        # (2) 통제
-        # training_sample = (cur_pos, action, reward, next_pos)
-        # loss = Train(agent, training_sample, "Q-learning")
+        # (1) 훈련 : 예측과 통제
         loss, reward, next_pos, terminal = Train(agent, env, len_episode, "Q-learning")
         print('reward_cell :{}, reward : {}'.format(env.reward_cell, reward))
 
@@ -60,11 +51,11 @@ for epi in range(num_episodes):
             print('reward_cell :{}, reward : {}'.format(env.reward_cell, reward))
             complete = True
 
-        # (3) 상태 반영
+        # (2) 상태 변경
         agent.set_pos(next_pos)                                             # Agent's next_pos is set to be the cur_pos.
         # print('agent.pos :', agent.pos)
 
-        # (4) 파라미터 추적
+        # (3) 파라미터 추적
         total_loss += loss
         total_reward += reward
 
@@ -80,9 +71,10 @@ for epi in range(num_episodes):
 
 
 # %%
+# 결과 플로팅 해보기
 from matplotlib import pyplot as plt
-pd.DataFrame(parameter_list).iloc(axis = 1)[2]
-plt.plot(pd.DataFrame(parameter_list).iloc(axis = 1)[1])
-plt.plot(pd.DataFrame(parameter_list).iloc(axis = 1)[2])
-plt.plot(pd.DataFrame(parameter_list).iloc(axis = 1)[3])
-len(np.where(pd.DataFrame(parameter_list).iloc(axis = 1)[5] == True)[0])
+# pd.DataFrame(parameter_list).iloc(axis = 1)[2]
+plt.plot(pd.DataFrame(parameter_list).iloc(axis = 1)[1])    # 에피소드 길이 플롯팅
+plt.plot(pd.DataFrame(parameter_list).iloc(axis = 1)[2])    # 평균 보상 플롯팅
+plt.plot(pd.DataFrame(parameter_list).iloc(axis = 1)[3])    # 학습 손실 플롯팅
+len(np.where(pd.DataFrame(parameter_list).iloc(axis = 1)[5] == True)[0])    # 도착지점에 도달한 횟수
