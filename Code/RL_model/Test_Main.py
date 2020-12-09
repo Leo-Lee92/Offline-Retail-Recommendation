@@ -12,7 +12,7 @@ env.set_grid_initialize((4, 4))             # 테스트 grid 환경을 원하는
 env.make_grid_world()                       # 만들어진 grid world 확인하기
 env.set_start((0, 0))                       # 출발지점 좌표 설정해주기
 env.set_end((3, 3))                         # 도착지점 좌표 설정해주기
-# env.set_reward([(1, 1)])                  # 보상 좌표 설정해주기 (도착지점만 보상좌표로 설정하고 싶으면 보상좌표 설정 안하면 됨.)
+env.set_reward([(2, 2)])                    # 보상 좌표 설정해주기 (도착지점만 보상좌표로 설정하고 싶으면 보상좌표 설정 안하면 됨.)
 env.grid_world                              # 그리드 월드 확인
 reward_cell = copy.deepcopy(env.reward_cell)
 
@@ -74,7 +74,15 @@ for epi in range(num_episodes):
 # 결과 플로팅 해보기
 from matplotlib import pyplot as plt
 # pd.DataFrame(parameter_list).iloc(axis = 1)[2]
+plt.figure()
+plt.title('Length of Episode per Episode')
 plt.plot(pd.DataFrame(parameter_list).iloc(axis = 1)[1])    # 에피소드 길이 플롯팅
+plt.show()
+
+plt.figure()
+plt.title('Mean Reward per Episode')
 plt.plot(pd.DataFrame(parameter_list).iloc(axis = 1)[2])    # 평균 보상 플롯팅
+plt.show()
+
 plt.plot(pd.DataFrame(parameter_list).iloc(axis = 1)[3])    # 학습 손실 플롯팅
 len(np.where(pd.DataFrame(parameter_list).iloc(axis = 1)[5] == True)[0])    # 도착지점에 도달한 횟수
