@@ -17,8 +17,9 @@ env.grid_world                              # 그리드 월드 확인
 reward_cell = copy.deepcopy(env.reward_cell)
 
 agent = Agent()
+agent.set_q_table(env.grid_dic)
 agent.epsilon = 1.0
-num_episodes = 1000
+num_episodes = 20
 parameter_list = []
 
 for epi in range(num_episodes):
@@ -43,7 +44,8 @@ for epi in range(num_episodes):
     while(terminal == False):
         len_episode += 1
         # (1) 훈련 : 예측과 통제
-        loss, reward, next_pos, terminal = Train(agent, env, len_episode, "Q-learning")
+        loss, reward, next_pos, terminal = Train_TABLE(agent, env, len_episode, "Q-learning")   # Q-Table 일 때
+        # loss, reward, next_pos, terminal = Train_DEEP(agent, env, len_episode, "Q-learning")  # Deep Represention 일때
         print('reward_cell :{}, reward : {}'.format(env.reward_cell, reward))
 
         if (terminal == True) and (reward > 1):

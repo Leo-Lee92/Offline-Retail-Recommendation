@@ -166,68 +166,68 @@ def Train_TABLE(agent, env, len_episode, algorithm):
 
     return  loss, reward, next_pos, terminal
 
-# def Train_DEEP(agent, env, len_episode, algorithm):
-#     gamma = 0.99
-#     lr = 1e-20
-#     optimizer = tf.keras.optimizers.Adam(lr)
+def Train_DEEP(agent, env, len_episode, algorithm):
+    gamma = 0.99
+    lr = 1e-20
+    optimizer = tf.keras.optimizers.Adam(lr)
 
-#     (0) 현재 상태 판단
-#     cur_pos = agent.get_pos()   # 현재 상태 조회
+    (0) 현재 상태 판단
+    cur_pos = agent.get_pos()   # 현재 상태 조회
     
-#     if algorithm == "SARSA":    # SARSA 'predicts' next action one more time based on current policy and 'control' with the predicted action.
-#         with tf.GradientTape() as tape:
-#             tape.watch(agent.trainable_variables)
+    if algorithm == "SARSA":    # SARSA 'predicts' next action one more time based on current policy and 'control' with the predicted action.
+        with tf.GradientTape() as tape:
+            tape.watch(agent.trainable_variables)
 
-#             # (1) 현재 Q-value 예측
-#             q_vector = agent(cur_pos)
-#             action = agent.get_action(q_vector)
-#             action_vector = tf.one_hot(action, depth = len(agent.action_space))
-#             pred_qval = tf.reduce_sum(action_vector * q_vector, axis = 1)
+            # (1) 현재 Q-value 예측
+            q_vector = agent(cur_pos)
+            action = agent.get_action(q_vector)
+            action_vector = tf.one_hot(action, depth = len(agent.action_space))
+            pred_qval = tf.reduce_sum(action_vector * q_vector, axis = 1)
 
-#             # (2) 다음 상태 (next_pos)를 조회
-#             next_pos, reward, terminal = env.move(agent, action)    
+            # (2) 다음 상태 (next_pos)를 조회
+            next_pos, reward, terminal = env.move(agent, action)    
 
-#             # (3) 타겟 Q-value 예측
-#             next_q_vector = agent(next_pos)
-#             next_action = agent.get_action(next_q_vector)
-#             next_action_vector = tf.one_hot(next_action, depth = len(agent.action_space))
-#             optimal_qval = tf.reduce_sum(next_action_vector * next_q_vector, axis = 1)            
-#             target_qval = reward + (1 - terminal) * gamma * optimal_qval
+            # (3) 타겟 Q-value 예측
+            next_q_vector = agent(next_pos)
+            next_action = agent.get_action(next_q_vector)
+            next_action_vector = tf.one_hot(next_action, depth = len(agent.action_space))
+            optimal_qval = tf.reduce_sum(next_action_vector * next_q_vector, axis = 1)            
+            target_qval = reward + (1 - terminal) * gamma * optimal_qval
 
-#             # (4) 손실 계산
-#             loss = tf.reduce_mean(tf.math.square(tf.stop_gradient(target_qval) - pred_qval))
+            # (4) 손실 계산
+            loss = tf.reduce_mean(tf.math.square(tf.stop_gradient(target_qval) - pred_qval))
 
-#         gradients = tape.gradient(loss, agent.trainable_variables)
-#         optimizer.apply_gradients(zip(gradients, agent.trainable_variables))
+        gradients = tape.gradient(loss, agent.trainable_variables)
+        optimizer.apply_gradients(zip(gradients, agent.trainable_variables))
 
-#         print("Episode : {0}, Action : {1}, current_pos : {2} -> next_pos : {3}, Reward : {4}, Terminal : {5}".format(epi, action, cur_pos, next_pos, reward, terminal))
+        print("Episode : {0}, Action : {1}, current_pos : {2} -> next_pos : {3}, Reward : {4}, Terminal : {5}".format(epi, action, cur_pos, next_pos, reward, terminal))
 
-#     if algorithm == "Q-learning":   # Q-learning 'control' with the observation that has the maximum q-value. Do not predicts one more time.
-#         with tf.GradientTape() as tape:
-#             tape.watch(agent.trainable_variables)
+    if algorithm == "Q-learning":   # Q-learning 'control' with the observation that has the maximum q-value. Do not predicts one more time.
+        with tf.GradientTape() as tape:
+            tape.watch(agent.trainable_variables)
 
-#             # (1) 현재 Q-value 예측
-#             q_vector = agent(cur_pos)
-#             action = agent.get_action(q_vector)
-#             action_vector = tf.one_hot(action, depth = len(agent.action_space))
-#             pred_qval = tf.reduce_sum(action_vector * q_vector, axis = 1)
+            # (1) 현재 Q-value 예측
+            q_vector = agent(cur_pos)
+            action = agent.get_action(q_vector)
+            action_vector = tf.one_hot(action, depth = len(agent.action_space))
+            pred_qval = tf.reduce_sum(action_vector * q_vector, axis = 1)
 
-#             # (2) 다음 상태 (next_pos)를 조회
-#             next_pos, reward, terminal = env.move(agent, action)    
+            # (2) 다음 상태 (next_pos)를 조회
+            next_pos, reward, terminal = env.move(agent, action)    
 
-#             # (3) 타겟 Q-value 예측
-#             next_q_vector = agent(next_pos)
-#             max_qval = np.amax(next_q_vector, axis = -1)
-#             target_qval = reward + (1 - terminal) * gamma * max_qval
+            # (3) 타겟 Q-value 예측
+            next_q_vector = agent(next_pos)
+            max_qval = np.amax(next_q_vector, axis = -1)
+            target_qval = reward + (1 - terminal) * gamma * max_qval
 
-#             # (4) 손실 계산
-#             loss = tf.reduce_mean(tf.math.square(tf.stop_gradient(target_qval) - pred_qval))
+            # (4) 손실 계산
+            loss = tf.reduce_mean(tf.math.square(tf.stop_gradient(target_qval) - pred_qval))
 
-#         gradients = tape.gradient(loss, agent.trainable_variables)
-#         optimizer.apply_gradients(zip(gradients, agent.trainable_variables))   
+        gradients = tape.gradient(loss, agent.trainable_variables)
+        optimizer.apply_gradients(zip(gradients, agent.trainable_variables))   
 
-#         print("Episode : {0}, Action : {1}, current_pos : {2} -> next_pos : {3}, Reward : {4}, Terminal : {5}".format(epi, action, cur_pos, next_pos, reward, terminal))
+        print("Episode : {0}, Action : {1}, current_pos : {2} -> next_pos : {3}, Reward : {4}, Terminal : {5}".format(epi, action, cur_pos, next_pos, reward, terminal))
 
-#     return  loss.numpy(), reward, next_pos, terminal
+    return  loss.numpy(), reward, next_pos, terminal
     
 # %%
